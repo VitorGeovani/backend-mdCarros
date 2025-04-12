@@ -1,30 +1,36 @@
 const express = require('express');
-const app = express();
-const path = require('path');
 const cors = require('cors');
-require('dotenv').config();
+const fileUpload = require('express-fileupload');
+const path = require('path');
+
+const app = express();
 
 // Middlewares globais
 app.use(cors());
 app.use(express.json());
+app.use(fileUpload());
+
+// Servir arquivos estáticos da pasta uploads (ex: imagens dos carros)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Importação das rotas
-const adminRoutes = require('./routes/adminRoutes');
 const carroRoutes = require('./routes/carroRoutes');
 const categoriaRoutes = require('./routes/categoriaRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const agendamentoRoutes = require('./routes/agendamentoRoutes');
-const vendaRoutes = require('./routes/vendaRoutes');
 const imagemRoutes = require('./routes/imagemRoutes');
+const vendaRoutes = require('./routes/vendaRoutes');
+const estoqueRoutes = require('./routes/estoqueRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
-// Uso das rotas
-app.use('/api/admin', adminRoutes);
-app.use('/api/carros', carroRoutes);
-app.use('/api/categorias', categoriaRoutes);
-app.use('/api/usuarios', usuarioRoutes);
-app.use('/api/agendamentos', agendamentoRoutes);
-app.use('/api/vendas', vendaRoutes);
-app.use('/api/imagens', imagemRoutes);
+// Aplicação das rotas SEM /api no prefixo, conforme solicitado
+app.use(carroRoutes);
+app.use(categoriaRoutes);
+app.use(usuarioRoutes);
+app.use(agendamentoRoutes);
+app.use(imagemRoutes);
+app.use(vendaRoutes);
+app.use(estoqueRoutes);
+app.use(adminRoutes);
 
 module.exports = app;

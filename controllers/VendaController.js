@@ -1,15 +1,18 @@
 const Venda = require('../models/Venda');
 
 const VendaController = {
-  async listar(req, res) {
-    const vendas = await Venda.listarTodas();
-    res.status(200).json(vendas);
+  listar: (req, res) => {
+    Venda.buscarTodas((err, results) => {
+      if (err) return res.status(500).json({ erro: err });
+      res.json(results);
+    });
   },
 
-  async registrar(req, res) {
-    const { valor_final, usuario_id, carro_id } = req.body;
-    await Venda.registrar({ valor_final, usuario_id, carro_id });
-    res.status(201).json({ mensagem: 'Venda registrada com sucesso!' });
+  registrar: (req, res) => {
+    Venda.registrar(req.body, (err, result) => {
+      if (err) return res.status(500).json({ erro: err });
+      res.status(201).json({ mensagem: 'Venda registrada com sucesso', id: result.insertId });
+    });
   }
 };
 

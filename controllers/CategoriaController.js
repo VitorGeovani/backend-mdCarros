@@ -1,15 +1,19 @@
 const Categoria = require('../models/Categoria');
 
 const CategoriaController = {
-  async listar(req, res) {
-    const categorias = await Categoria.listarTodas();
-    res.status(200).json(categorias);
+  listar: (req, res) => {
+    Categoria.buscarTodas((err, results) => {
+      if (err) return res.status(500).json({ erro: err });
+      res.json(results);
+    });
   },
 
-  async criar(req, res) {
+  criar: (req, res) => {
     const { nome, descricao } = req.body;
-    await Categoria.criar(nome, descricao);
-    res.status(201).json({ mensagem: 'Categoria criada com sucesso!' });
+    Categoria.criar({ nome, descricao }, (err, result) => {
+      if (err) return res.status(500).json({ erro: err });
+      res.status(201).json({ mensagem: 'Categoria criada com sucesso', id: result.insertId });
+    });
   }
 };
 

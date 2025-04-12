@@ -1,22 +1,24 @@
 const db = require('../config/database');
 
 const Estoque = {
-  async atualizarEstoque(carro_id, quantidade) {
-    const [result] = await db.query(
-      `INSERT INTO estoque (carro_id, quantidade)
-       VALUES (?, ?)
-       ON DUPLICATE KEY UPDATE quantidade = ?`,
-      [carro_id, quantidade, quantidade]
-    );
-    return result;
+  buscarTodos: (callback) => {
+    const sql = `
+      SELECT e.*, c.modelo as modelo_carro 
+      FROM estoque e
+      JOIN carros c ON e.carro_id = c.id
+    `;
+    db.query(sql, callback);
   },
 
-  async buscarTodos() {
-    const [rows] = await db.query(
-      `SELECT e.*, c.modelo FROM estoque e
-       JOIN carros c ON c.id = e.carro_id`
-    );
-    return rows;
+  criar: (estoque, callback) => {
+    const sql = `INSERT INTO estoque (carro_id, quantidade, localizacao) 
+                 VALUES (?, ?, ?)`;
+    db.query(sql, [estoque.carro_id, estoque.quantidade, estoque.localizacao], callback);
+  },
+
+  atualizarQuantidade: (carroId, quantidade, callback) => {
+    const sql = `UPDATE estoque SET quantidade = ? WHERE carro_id = ?`;
+    db.query(sql, [quantidade, carroId], callback);
   }
 };
 

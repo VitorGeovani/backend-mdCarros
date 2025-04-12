@@ -1,35 +1,28 @@
-const { getConexao } = require('../config/database');
+const db = require('../config/database');
 
 const Carro = {
-  async listarTodos() {
-    try {
-      const conexao = getConexao();
-      const [resultados] = await conexao.query('SELECT * FROM carros');
-      return resultados;
-    } catch (erro) {
-      throw erro;
-    }
+  buscarTodos: (callback) => {
+    const sql = 'SELECT * FROM carros';
+    db.query(sql, callback);
   },
 
-  async encontrarPorId(id) {
-    try {
-      const conexao = getConexao();
-      const [resultados] = await conexao.query('SELECT * FROM carros WHERE id = ?', [id]);
-      return resultados[0];
-    } catch (erro) {
-      throw erro;
-    }
+  buscarPorId: (id, callback) => {
+    const sql = 'SELECT * FROM carros WHERE id = ?';
+    db.query(sql, [id], callback);
   },
 
-  async criar({ marca, modelo, ano, km, preco, descricao, categoria_id }) {
-    try {
-      const conexao = getConexao();
-      const sql = 'INSERT INTO carros (marca, modelo, ano, km, preco, descricao, categoria_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
-      const [resultado] = await conexao.query(sql, [marca, modelo, ano, km, preco, descricao, categoria_id]);
-      return resultado.insertId;
-    } catch (erro) {
-      throw erro;
-    }
+  criar: (carro, callback) => {
+    const sql = `INSERT INTO carros (marca, modelo, ano, km, preco, descricao, categoria_id) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    db.query(sql, [
+      carro.marca, carro.modelo, carro.ano, carro.km,
+      carro.preco, carro.descricao, carro.categoria_id
+    ], callback);
+  },
+
+  deletar: (id, callback) => {
+    const sql = 'DELETE FROM carros WHERE id = ?';
+    db.query(sql, [id], callback);
   }
 };
 

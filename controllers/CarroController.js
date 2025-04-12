@@ -1,37 +1,35 @@
 const Carro = require('../models/Carro');
-const Imagem = require('../models/Imagem');
 
 const CarroController = {
-  async listar(req, res) {
-    const carros = await Carro.listarTodos();
-    res.status(200).json(carros);
+  listar: (req, res) => {
+    Carro.buscarTodos((err, results) => {
+      if (err) return res.status(500).json({ erro: err });
+      res.json(results);
+    });
   },
 
-  async detalhar(req, res) {
+  buscar: (req, res) => {
     const { id } = req.params;
-    const carro = await Carro.encontrarPorId(id);
-    if (!carro) return res.status(404).json({ mensagem: 'Carro não encontrado' });
-
-    const imagens = await Imagem.listarPorCarro(id);
-    res.status(200).json({ ...carro, imagens });
+    Carro.buscarPorId(id, (err, result) => {
+      if (err) return res.status(500).json({ erro: err });
+      if (!result.length) return res.status(404).json({ mensagem: 'Carro não encontrado' });
+      res.json(result[0]);
+    });
   },
 
-  async criar(req, res) {
-    const { marca, modelo, ano, km, preco, descricao, categoria_id } = req.body;
-    await Carro.criar({ marca, modelo, ano, km, preco, descricao, categoria_id });
-    res.status(201).json({ mensagem: 'Carro cadastrado com sucesso!' });
+  criar: (req, res) => {
+    Carro.criar(req.body, (err, result) => {
+      if (err) return res.status(500).json({ erro: err });
+      res.status(201).json({ mensagem: 'Carro cadastrado com sucesso', id: result.insertId });
+    });
   },
 
-  async deletar(req, res) {
+  deletar: (req, res) => {
     const { id } = req.params;
-    const carro = await Carro.encontrarPorId(id);
-
-    if (!carro) {
-      return res.status(404).json({ mensagem: 'Carro não encontrado' });
-    }
-
-    await Carro.deletar(id);
-    res.status(200).json({ mensagem: 'Carro deletado com sucesso!' });
+    Carro.deletar(id, (err) => {
+      if (err) return res.status(500).json({ erro: err });
+      res.json({ mensagem: 'Carro deletado com sucesso' });
+    });
   }
 };
 

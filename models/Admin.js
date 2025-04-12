@@ -1,19 +1,19 @@
-const { getConexao } = require('../config/database');
+const db = require('../config/database');
 
 const Admin = {
-  async encontrarPorEmail(email) {
-    const conexao = getConexao();
-    const [rows] = await conexao.query('SELECT * FROM admins WHERE email = ?', [email]);
-    return rows[0];
+  buscarTodos: (callback) => {
+    const sql = 'SELECT * FROM admins';
+    db.query(sql, callback);
   },
 
-  async criar(nome, email, senha) {
-    const conexao = getConexao();
-    const [result] = await conexao.query(
-      'INSERT INTO admins (nome, email, senha) VALUES (?, ?, ?)',
-      [nome, email, senha]
-    );
-    return { id: result.insertId, nome, email };
+  buscarPorEmail: (email, callback) => {
+    const sql = 'SELECT * FROM admins WHERE email = ?';
+    db.query(sql, [email], callback);
+  },
+
+  criar: (admin, callback) => {
+    const sql = 'INSERT INTO admins (nome, email, senha) VALUES (?, ?, ?)';
+    db.query(sql, [admin.nome, admin.email, admin.senha], callback);
   }
 };
 

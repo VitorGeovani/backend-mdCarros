@@ -1,25 +1,18 @@
 const Agendamento = require('../models/Agendamento');
 
 const AgendamentoController = {
-  async criar(req, res) {
-    try {
-      const agendamento = await Agendamento.criar(req.body);
-      res.status(201).json(agendamento);
-    } catch (err) {
-      res.status(500).json({ erro: 'Erro ao criar agendamento' });
-    }
+  listar: (req, res) => {
+    Agendamento.buscarTodos((err, results) => {
+      if (err) return res.status(500).json({ erro: err });
+      res.json(results);
+    });
   },
 
-  async listar(req, res) {
-    const lista = await Agendamento.listar();
-    res.json(lista);
-  },
-
-  async atualizarStatus(req, res) {
-    const { id } = req.params;
-    const { status } = req.body;
-    await Agendamento.atualizarStatus(id, status);
-    res.json({ mensagem: 'Status atualizado com sucesso' });
+  agendar: (req, res) => {
+    Agendamento.criar(req.body, (err, result) => {
+      if (err) return res.status(500).json({ erro: err });
+      res.status(201).json({ mensagem: 'Agendamento realizado com sucesso', id: result.insertId });
+    });
   }
 };
 

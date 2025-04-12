@@ -1,28 +1,13 @@
-const Carro = require('../models/Carro');
-const Imagem = require('../models/Imagem');
+const carroRepository = require('../repository/carroRepository');
 
-const CarroService = {
-  async listarTodos() {
-    return await Carro.listarTodos();
-  },
+module.exports = {
+  listarTodos: () => carroRepository.buscarTodos(),
 
-  async detalhar(id) {
-    const carro = await Carro.encontrarPorId(id);
-    if (!carro) throw new Error('Carro não encontrado');
+  buscarPorId: (id) => carroRepository.buscarPorId(id),
 
-    const imagens = await Imagem.listarPorCarro(id);
-    return { ...carro, imagens };
-  },
+  criar: (dados) => carroRepository.inserir(dados),
 
-  async criar(dadosCarro) {
-    return await Carro.criar(dadosCarro);
-  },
+  atualizar: (id, dados) => carroRepository.atualizar(id, dados),
 
-  async deletar(id) {
-    const carro = await Carro.encontrarPorId(id);
-    if (!carro) throw new Error('Carro não encontrado');
-    return await Carro.deletar(id);
-  }
+  deletar: (id) => carroRepository.deletar(id)
 };
-
-module.exports = CarroService;

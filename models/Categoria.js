@@ -1,16 +1,19 @@
 const db = require('../config/database');
 
 const Categoria = {
-  async listarTodas() {
-    const [rows] = await db.execute('SELECT * FROM categorias');
-    return rows;
+  buscarTodas: (callback) => {
+    const sql = 'SELECT * FROM categorias';
+    db.query(sql, callback);
   },
 
-  async criar(nome, descricao) {
-    await db.execute(
-      'INSERT INTO categorias (nome, descricao) VALUES (?, ?)',
-      [nome, descricao]
-    );
+  buscarPorId: (id, callback) => {
+    const sql = 'SELECT * FROM categorias WHERE id = ?';
+    db.query(sql, [id], callback);
+  },
+
+  criar: (categoria, callback) => {
+    const sql = 'INSERT INTO categorias (nome, descricao) VALUES (?, ?)';
+    db.query(sql, [categoria.nome, categoria.descricao], callback);
   }
 };
 

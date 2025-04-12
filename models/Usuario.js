@@ -1,22 +1,19 @@
 const db = require('../config/database');
 
 const Usuario = {
-  async criar({ nome, email, telefone }) {
-    const [result] = await db.query(
-      'INSERT INTO usuarios (nome, email, telefone) VALUES (?, ?, ?)',
-      [nome, email, telefone]
-    );
-    return { id: result.insertId, nome, email, telefone };
+  buscarTodos: (callback) => {
+    const sql = 'SELECT * FROM usuarios';
+    db.query(sql, callback);
   },
 
-  async buscarPorEmail(email) {
-    const [rows] = await db.query('SELECT * FROM usuarios WHERE email = ?', [email]);
-    return rows[0];
+  buscarPorEmail: (email, callback) => {
+    const sql = 'SELECT * FROM usuarios WHERE email = ?';
+    db.query(sql, [email], callback);
   },
 
-  async listarTodos() {
-    const [rows] = await db.query('SELECT * FROM usuarios');
-    return rows;
+  criar: (usuario, callback) => {
+    const sql = 'INSERT INTO usuarios (nome, email, telefone) VALUES (?, ?, ?)';
+    db.query(sql, [usuario.nome, usuario.email, usuario.telefone], callback);
   }
 };
 

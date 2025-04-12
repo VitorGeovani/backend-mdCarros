@@ -1,20 +1,28 @@
-let carros = [];
+// === repository/carroRepository.js ===
+const db = require('../utils/db');
 
-const CarroRepository = {
-  buscarTodos: async () => carros,
+module.exports = {
+  buscarTodos: async () => {
+    const [linhas] = await db.query('SELECT * FROM carros');
+    return linhas;
+  },
 
-  criar: async (carro) => {
-    const novo = { id: Date.now().toString(), ...carro };
-    carros.push(novo);
-    return novo;
+  buscarPorId: async (id) => {
+    const [linhas] = await db.query('SELECT * FROM carros WHERE id = ?', [id]);
+    return linhas[0];
+  },
+
+  inserir: async (dados) => {
+    const { marca, modelo, ano, km, preco, descricao, categoria_id } = dados;
+    await db.query('INSERT INTO carros (marca, modelo, ano, km, preco, descricao, categoria_id) VALUES (?, ?, ?, ?, ?, ?, ?)', [marca, modelo, ano, km, preco, descricao, categoria_id]);
+  },
+
+  atualizar: async (id, dados) => {
+    const { marca, modelo, ano, km, preco, descricao, categoria_id } = dados;
+    await db.query('UPDATE carros SET marca = ?, modelo = ?, ano = ?, km = ?, preco = ?, descricao = ?, categoria_id = ? WHERE id = ?', [marca, modelo, ano, km, preco, descricao, categoria_id, id]);
   },
 
   deletar: async (id) => {
-    const index = carros.findIndex((c) => c.id === id);
-    if (index === -1) return false;
-    carros.splice(index, 1);
-    return true;
+    await db.query('DELETE FROM carros WHERE id = ?', [id]);
   }
 };
-
-module.exports = CarroRepository;

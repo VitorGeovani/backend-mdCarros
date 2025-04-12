@@ -1,31 +1,27 @@
 const db = require('../config/database');
 
 const Agendamento = {
-  async criar({ data_agendamento, observacoes, usuario_id, carro_id }) {
-    const [result] = await db.query(
-      `INSERT INTO agendamentos (data_agendamento, observacoes, usuario_id, carro_id)
-       VALUES (?, ?, ?, ?)`,
-      [data_agendamento, observacoes, usuario_id, carro_id]
-    );
-    return { id: result.insertId };
+  buscarTodos: (callback) => {
+    const sql = `
+      SELECT ag.*, us.nome as nome_usuario, ca.modelo as modelo_carro
+      FROM agendamentos ag
+      JOIN usuarios us ON ag.usuario_id = us.id
+      JOIN carros ca ON ag.carro_id = ca.id
+    `;
+    db.query(sql, callback);
   },
 
-  async listar() {
-    const [rows] = await db.query(
-      `SELECT a.*, u.nome AS nome_usuario, c.modelo AS carro_modelo
-       FROM agendamentos a
-       JOIN usuarios u ON a.usuario_id = u.id
-       JOIN carros c ON a.carro_id = c.id`
-    );
-    return rows;
-  },
-
-  async atualizarStatus(id, status) {
-    const [result] = await db.query(
-      'UPDATE agendamentos SET status = ? WHERE id = ?',
-      [status, id]
-    );
-    return result;
+  criar: (agendamento, callback) => {
+    const sql = `INSERT INTO agendamentos 
+      (data_agendamento, status, observacoes, usuario_id, carro_id) 
+      VALUES (?, ?, ?, ?, ?)`;
+    db.query(sql, [
+      agendamento.data_agendamento,
+      agendamento.status,
+      agendamento.observacoes,
+      agendamento.usuario_id,
+      agendamento.carro_id
+    ], callback);
   }
 };
 
